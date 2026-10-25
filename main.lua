@@ -15705,31 +15705,46 @@ task.defer(function()
         return Font.new("rbxassetid://12187365364", w or Enum.FontWeight.Bold)
     end
 
-    -- Driver RGB global (una sola conexion renderstepped reutilizable)
+    -- Driver RGB global (una sola conexion renderstepped reutilizable).
+    -- Nuevo esquema: UIGradient multicolor neon que ROTA (no HSV plano).
+    local NEON_SEQUENCE = ColorSequence.new({
+        ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 46, 180)),  -- hot pink
+        ColorSequenceKeypoint.new(0.20, Color3.fromRGB(188, 70, 255)),  -- violet
+        ColorSequenceKeypoint.new(0.40, Color3.fromRGB(0,   180, 255)), -- cyan
+        ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0,   255, 196)), -- aqua
+        ColorSequenceKeypoint.new(0.80, Color3.fromRGB(255, 110, 90)),  -- coral
+        ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 46, 180)),  -- loop
+    })
+
     if not _G.__ParceHubRGB then
-        _G.__ParceHubRGB = { list = {}, clock = 0 }
+        _G.__ParceHubRGB = { list = {}, rot = 0 }
         RS:BindToRenderStep("ParceHubRGB", Enum.RenderPriority.First.Value, function(dt)
             local reg = _G.__ParceHubRGB
-            reg.clock = (reg.clock + dt * 0.18) % 1
-            local color = Color3.fromHSV(reg.clock, 0.85, 1)
+            reg.rot = (reg.rot + dt * 120) % 360
             for i = #reg.list, 1, -1 do
-                local inst = reg.list[i]
-                if typeof(inst) ~= "Instance" or not inst.Parent then
+                local g = reg.list[i]
+                if typeof(g) ~= "Instance" or not g.Parent then
                     table.remove(reg.list, i)
-                elseif inst:IsA("UIStroke") then
-                    inst.Color = color
-                elseif inst:IsA("UIGradient") then
-                    inst.Color = ColorSequence.new(color)
-                elseif inst:IsA("ImageLabel") or inst:IsA("ImageButton") then
-                    inst.ImageColor3 = color
                 else
-                    pcall(function() inst.Color = color end)
-                    pcall(function() inst.BackgroundColor3 = color end)
+                    g.Rotation = reg.rot
                 end
             end
         end)
     end
-    local function AddRGB(inst) table.insert(_G.__ParceHubRGB.list, inst); return inst end
+
+    -- AddRGB: a cada UIStroke le monta un UIGradient hijo con la secuencia
+    -- neon. El driver sólo anima UIGradient.Rotation.
+    local function AddRGB(stroke)
+        if not stroke then return stroke end
+        local grad = stroke:FindFirstChildOfClass("UIGradient")
+        if not grad then
+            grad = Instance.new("UIGradient")
+            grad.Parent = stroke
+        end
+        grad.Color = NEON_SEQUENCE
+        table.insert(_G.__ParceHubRGB.list, grad)
+        return stroke
+    end
 
     -- Capa oscura semitransparente sobre el fondo oficial 99931597855271.
     local Bg = Main:FindFirstChild("Background")

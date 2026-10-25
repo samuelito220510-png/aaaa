@@ -15883,9 +15883,10 @@ task.defer(function()
 
                 local wrap = Instance.new("Frame")
                 wrap.Name                 = "PremiumRGBOutline"
-                wrap.Size                 = UDim2.new(1, 2, 1, 2)
-                wrap.Position             = UDim2.new(0.5, 0, 0.5, 0)
-                wrap.AnchorPoint          = Vector2.new(0.5, 0.5)
+                wrap.AutomaticSize        = Enum.AutomaticSize.None
+                wrap.Size                 = UDim2.fromScale(1, 1)
+                wrap.Position             = UDim2.fromScale(0, 0)
+                wrap.AnchorPoint          = Vector2.new(0, 0)
                 wrap.BackgroundTransparency = 1
                 wrap.ZIndex               = 25
                 wrap.Parent               = tabFrame

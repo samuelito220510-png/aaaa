@@ -4026,7 +4026,7 @@ Slider=Color3.fromHex"#7c3aed",
 Checkbox=Color3.fromHex"#7c3aed",
 
 PanelBackground=Color3.fromHex"#121218",
-PanelBackgroundTransparency=0.08,
+PanelBackgroundTransparency=0.55,
 
 SliderIcon=Color3.fromHex"#ffffff",
 Primary=Color3.fromHex"#8b5cf6",
@@ -15657,7 +15657,7 @@ end
 
 --[[ ParceHub Premium — defaults inyectados antes de construir la ventana ]]
 aA.Background              = aA.Background or "rbxassetid://99931597855271"
-aA.BackgroundImageTransparency = aA.BackgroundImageTransparency or 0.35
+aA.BackgroundImageTransparency = aA.BackgroundImageTransparency or 0
 aA.ShadowTransparency      = aA.ShadowTransparency or 0.35
 aA.Radius                  = aA.Radius or 18
 aA.SideBarWidth            = aA.SideBarWidth or 210
@@ -15735,7 +15735,7 @@ task.defer(function()
         Darken.Name = "PremiumDarken"
         Darken.Size = UDim2.fromScale(1, 1)
         Darken.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
-        Darken.BackgroundTransparency = 0.35
+        Darken.BackgroundTransparency = 0.55
         Darken.BorderSizePixel = 0
         Darken.ZIndex = 2
         NewCorner(Darken, Radius)
@@ -15749,8 +15749,8 @@ task.defer(function()
             ColorSequenceKeypoint.new(1,   Color3.fromRGB(10, 10, 14)),
         })
         grad.Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0, 0.1),
-            NumberSequenceKeypoint.new(1, 0.4),
+            NumberSequenceKeypoint.new(0, 0.5),
+            NumberSequenceKeypoint.new(1, 0.75),
         })
         grad.Parent = Darken
     end
@@ -15843,7 +15843,7 @@ task.defer(function()
         local sideBg = Instance.new("Frame")
         sideBg.Name                 = "PremiumSideBg"
         sideBg.BackgroundColor3     = Color3.fromRGB(14, 14, 20)
-        sideBg.BackgroundTransparency = 0.15
+        sideBg.BackgroundTransparency = 0.45
         sideBg.BorderSizePixel      = 0
         sideBg.Size                 = UDim2.fromScale(1, 1)
         sideBg.ZIndex               = 1

@@ -11704,8 +11704,8 @@ UICorner=Window.UICorner-(Window.UIPadding/2),
 
 Gap=Window.NewElements and 1 or 6,
 
-TabPaddingX=4+(Window.UIPadding/2),
-TabPaddingY=3+(Window.UIPadding/2),
+TabPaddingX=6+(Window.UIPadding/2),
+TabPaddingY=7+(Window.UIPadding/2),
 TitlePaddingY=0,
 }
 
@@ -11783,9 +11783,11 @@ ThemeTag={
 TextColor3="TabTitle",
 },
 TextTransparency=not ar.Locked and 0.4 or 0.7,
-TextSize=15,
+TextSize=16,
 Size=UDim2.new(1,0,0,0),
-FontFace=Font.new(ak.Font,Enum.FontWeight.Medium),
+FontFace=Font.new(ak.Font,Enum.FontWeight.ExtraBold),
+TextStrokeTransparency=0.35,
+TextStrokeColor3=Color3.new(0,0,0),
 TextWrapped=true,
 RichText=true,
 AutomaticSize="Y",
@@ -11813,6 +11815,7 @@ local at=0
 local au
 local av
 
+ar.Icon=nil
 if ar.Icon then
 au=ak.Image(
 ar.Icon,
@@ -15766,7 +15769,7 @@ task.defer(function()
         NewCorner(wrap, Radius)
 
         local s = Instance.new("UIStroke")
-        s.Thickness       = 1.6
+        s.Thickness       = 2.6
         s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
         s.LineJoinMode    = Enum.LineJoinMode.Round
         s.Transparency    = 0.05
@@ -15881,20 +15884,22 @@ task.defer(function()
             local function dressTab(tabFrame)
                 if not isTab(tabFrame) then return end
 
+                -- Wrap mete el stroke 3 px DENTRO del tab para que el
+                -- borde no sea recortado por el ScrollingFrame padre.
                 local wrap = Instance.new("Frame")
                 wrap.Name                 = "PremiumRGBOutline"
                 wrap.AutomaticSize        = Enum.AutomaticSize.None
-                wrap.Size                 = UDim2.fromScale(1, 1)
-                wrap.Position             = UDim2.fromScale(0, 0)
+                wrap.Size                 = UDim2.new(1, -6, 1, -6)
+                wrap.Position             = UDim2.fromOffset(3, 3)
                 wrap.AnchorPoint          = Vector2.new(0, 0)
                 wrap.BackgroundTransparency = 1
                 wrap.ZIndex               = 25
                 wrap.Parent               = tabFrame
-                NewCorner(wrap, tabRadius)
+                NewCorner(wrap, tabRadius - 3)
 
                 local st = Instance.new("UIStroke")
-                st.Thickness       = 1.4
-                st.Transparency    = 0.35
+                st.Thickness       = 2.2
+                st.Transparency    = 0.15
                 st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
                 st.LineJoinMode    = Enum.LineJoinMode.Round
                 st.Color           = Color3.fromRGB(140, 92, 246)
@@ -15902,10 +15907,10 @@ task.defer(function()
                 AddRGB(st)
 
                 tabFrame.MouseEnter:Connect(function()
-                    Tween(st, TI_FAST, { Transparency = 0.1, Thickness = 1.8 })
+                    Tween(st, TI_FAST, { Transparency = 0, Thickness = 2.8 })
                 end)
                 tabFrame.MouseLeave:Connect(function()
-                    Tween(st, TI_FAST, { Transparency = 0.35, Thickness = 1.4 })
+                    Tween(st, TI_FAST, { Transparency = 0.15, Thickness = 2.2 })
                 end)
             end
 

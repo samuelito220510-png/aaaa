@@ -15861,60 +15861,62 @@ task.defer(function()
         line.Parent               = SideCont
     end
 
-    -- Outlines RGB en cada tab (sidebar). Hook recursivo que atrapa tabs
-    -- creados ahora, tabs futuros, y tambien tabs anidados en Sections.
+    -- Outlines RGB en cada tab (sidebar).
+    -- Pinta UNICAMENTE los NewRoundFrame tabs: hijos DIRECTOS de SideBar.Frame
+    -- que son ImageButton con hijos "Frame" y "Outline" (firma de la lib).
     local Scrolling = UI.SideBar
-    local tabRadius = (aA.UICorner or 18) - math.floor((aA.UIPadding or 14) / 2)
-    local function dressTab(tabFrame)
-        if typeof(tabFrame) ~= "Instance" then return end
-        if not (tabFrame:IsA("ImageButton") or tabFrame:IsA("ImageLabel")) then return end
-        if tabFrame:FindFirstChild("PremiumRGBOutline") then return end
+    if Scrolling then
+        local tabContainer = Scrolling:FindFirstChild("Frame")
+        local tabRadius = (aA.Radius or 18) - math.floor((aA.UIPadding or 14) / 2)
+        if tabContainer then
+            local function isTab(obj)
+                return obj
+                    and obj:IsA("ImageButton")
+                    and obj.Parent == tabContainer
+                    and obj:FindFirstChild("Frame")
+                    and obj:FindFirstChild("Outline")
+                    and not obj:FindFirstChild("PremiumRGBOutline")
+            end
 
-        -- NewRoundFrame tabs llevan 2 hijos: "Outline" y "Frame" (textos).
-        -- Si no cuadra con esa forma, no es un tab visible.
-        if not tabFrame:FindFirstChild("Frame") then return end
+            local function dressTab(tabFrame)
+                if not isTab(tabFrame) then return end
 
-        local wrap = Instance.new("Frame")
-        wrap.Name                 = "PremiumRGBOutline"
-        wrap.Size                 = UDim2.new(1, 2, 1, 2)
-        wrap.Position             = UDim2.new(0.5, 0, 0.5, 0)
-        wrap.AnchorPoint          = Vector2.new(0.5, 0.5)
-        wrap.BackgroundTransparency = 1
-        wrap.ZIndex               = 25
-        wrap.Parent               = tabFrame
-        NewCorner(wrap, tabRadius)
+                local wrap = Instance.new("Frame")
+                wrap.Name                 = "PremiumRGBOutline"
+                wrap.Size                 = UDim2.new(1, 2, 1, 2)
+                wrap.Position             = UDim2.new(0.5, 0, 0.5, 0)
+                wrap.AnchorPoint          = Vector2.new(0.5, 0.5)
+                wrap.BackgroundTransparency = 1
+                wrap.ZIndex               = 25
+                wrap.Parent               = tabFrame
+                NewCorner(wrap, tabRadius)
 
-        local st = Instance.new("UIStroke")
-        st.Thickness       = 1.6
-        st.Transparency    = 0.25
-        st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        st.LineJoinMode    = Enum.LineJoinMode.Round
-        st.Color           = Color3.fromRGB(140, 92, 246)
-        st.Parent          = wrap
-        AddRGB(st)
+                local st = Instance.new("UIStroke")
+                st.Thickness       = 1.4
+                st.Transparency    = 0.35
+                st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                st.LineJoinMode    = Enum.LineJoinMode.Round
+                st.Color           = Color3.fromRGB(140, 92, 246)
+                st.Parent          = wrap
+                AddRGB(st)
 
-        if tabFrame:IsA("ImageButton") then
-            tabFrame.MouseEnter:Connect(function()
-                Tween(st, TI_FAST, { Transparency = 0.05, Thickness = 2.0 })
-            end)
-            tabFrame.MouseLeave:Connect(function()
-                Tween(st, TI_FAST, { Transparency = 0.25, Thickness = 1.6 })
+                tabFrame.MouseEnter:Connect(function()
+                    Tween(st, TI_FAST, { Transparency = 0.1, Thickness = 1.8 })
+                end)
+                tabFrame.MouseLeave:Connect(function()
+                    Tween(st, TI_FAST, { Transparency = 0.35, Thickness = 1.4 })
+                end)
+            end
+
+            for _, child in ipairs(tabContainer:GetChildren()) do
+                dressTab(child)
+            end
+            tabContainer.ChildAdded:Connect(function(child)
+                task.wait()
+                dressTab(child)
             end)
         end
     end
-
-    local function sweep(root)
-        if not root then return end
-        for _, child in ipairs(root:GetDescendants()) do
-            dressTab(child)
-        end
-        root.DescendantAdded:Connect(function(child)
-            task.wait()
-            dressTab(child)
-        end)
-    end
-
-    if Scrolling then sweep(Scrolling) end
 
     -- Animacion de apertura suave.
     local target = aA.Size

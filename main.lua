@@ -4026,7 +4026,7 @@ Slider=Color3.fromHex"#7c3aed",
 Checkbox=Color3.fromHex"#7c3aed",
 
 PanelBackground=Color3.fromHex"#121218",
-PanelBackgroundTransparency=0.55,
+PanelBackgroundTransparency=0.78,
 
 SliderIcon=Color3.fromHex"#ffffff",
 Primary=Color3.fromHex"#8b5cf6",
@@ -4045,18 +4045,18 @@ WindowTopbarButtonIcon=Color3.fromHex"#e5e7eb",
 
 TabBackground=Color3.fromHex"#1a1a22",
 TabBackgroundHover=Color3.fromHex"#2a2135",
-TabBackgroundHoverTransparency=0.80,
+TabBackgroundHoverTransparency=0.55,
 TabBackgroundActive=Color3.fromHex"#3b1f70",
-TabBackgroundActiveTransparency=0.55,
-TabText=Color3.fromHex"#f3f4f6",
-TabTextTransparency=0.35,
+TabBackgroundActiveTransparency=0.30,
+TabText=Color3.fromHex"#ffffff",
+TabTextTransparency=0.08,
 TabTextTransparencyActive=0,
-TabIcon=Color3.fromHex"#c7c7d1",
-TabIconTransparency=0.40,
+TabIcon=Color3.fromHex"#e9e9f1",
+TabIconTransparency=0.12,
 TabIconTransparencyActive=0,
 TabBorder=Color3.fromHex"#ffffff",
 TabBorderTransparency=1,
-TabBorderTransparencyActive=0,
+TabBorderTransparencyActive=1,
 
 SectionBox=Color3.fromHex"#15151c",
 SectionBoxBorder=Color3.fromHex"#8b5cf6",
@@ -15735,7 +15735,7 @@ task.defer(function()
         Darken.Name = "PremiumDarken"
         Darken.Size = UDim2.fromScale(1, 1)
         Darken.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
-        Darken.BackgroundTransparency = 0.55
+        Darken.BackgroundTransparency = 0.78
         Darken.BorderSizePixel = 0
         Darken.ZIndex = 2
         NewCorner(Darken, Radius)
@@ -15749,8 +15749,8 @@ task.defer(function()
             ColorSequenceKeypoint.new(1,   Color3.fromRGB(10, 10, 14)),
         })
         grad.Transparency = NumberSequence.new({
-            NumberSequenceKeypoint.new(0, 0.5),
-            NumberSequenceKeypoint.new(1, 0.75),
+            NumberSequenceKeypoint.new(0, 0.75),
+            NumberSequenceKeypoint.new(1, 0.90),
         })
         grad.Parent = Darken
     end
@@ -15842,8 +15842,8 @@ task.defer(function()
     if SideCont and not SideCont:FindFirstChild("PremiumSideBg") then
         local sideBg = Instance.new("Frame")
         sideBg.Name                 = "PremiumSideBg"
-        sideBg.BackgroundColor3     = Color3.fromRGB(14, 14, 20)
-        sideBg.BackgroundTransparency = 0.45
+        sideBg.BackgroundColor3     = Color3.fromRGB(12, 12, 18)
+        sideBg.BackgroundTransparency = 0.35
         sideBg.BorderSizePixel      = 0
         sideBg.Size                 = UDim2.fromScale(1, 1)
         sideBg.ZIndex               = 1
@@ -15861,50 +15861,60 @@ task.defer(function()
         line.Parent               = SideCont
     end
 
-    -- Outlines RGB en cada tab (hook sobre tabs nuevos tambien).
+    -- Outlines RGB en cada tab (sidebar). Hook recursivo que atrapa tabs
+    -- creados ahora, tabs futuros, y tambien tabs anidados en Sections.
     local Scrolling = UI.SideBar
-    if Scrolling then
-        local tabContainer = Scrolling:FindFirstChildOfClass("Frame")
-        if tabContainer then
-            local function dressTab(tabFrame)
-                if not (tabFrame:IsA("Frame") or tabFrame:IsA("ImageLabel")) then return end
-                if tabFrame:FindFirstChild("PremiumRGBOutline") then return end
+    local tabRadius = (aA.UICorner or 18) - math.floor((aA.UIPadding or 14) / 2)
+    local function dressTab(tabFrame)
+        if typeof(tabFrame) ~= "Instance" then return end
+        if not (tabFrame:IsA("ImageButton") or tabFrame:IsA("ImageLabel")) then return end
+        if tabFrame:FindFirstChild("PremiumRGBOutline") then return end
 
-                local wrap = Instance.new("Frame")
-                wrap.Name = "PremiumRGBOutline"
-                wrap.Size = UDim2.fromScale(1, 1)
-                wrap.BackgroundTransparency = 1
-                wrap.ZIndex = 20
-                wrap.Parent = tabFrame
-                NewCorner(wrap, 10)
+        -- NewRoundFrame tabs llevan 2 hijos: "Outline" y "Frame" (textos).
+        -- Si no cuadra con esa forma, no es un tab visible.
+        if not tabFrame:FindFirstChild("Frame") then return end
 
-                local st = Instance.new("UIStroke")
-                st.Thickness       = 1.1
-                st.Transparency    = 0.70
-                st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-                st.LineJoinMode    = Enum.LineJoinMode.Round
-                st.Parent          = wrap
-                AddRGB(st)
+        local wrap = Instance.new("Frame")
+        wrap.Name                 = "PremiumRGBOutline"
+        wrap.Size                 = UDim2.new(1, 2, 1, 2)
+        wrap.Position             = UDim2.new(0.5, 0, 0.5, 0)
+        wrap.AnchorPoint          = Vector2.new(0.5, 0.5)
+        wrap.BackgroundTransparency = 1
+        wrap.ZIndex               = 25
+        wrap.Parent               = tabFrame
+        NewCorner(wrap, tabRadius)
 
-                local btn = tabFrame:FindFirstChildOfClass("TextButton")
-                        or tabFrame:FindFirstChildOfClass("ImageButton")
-                if btn then
-                    btn.MouseEnter:Connect(function()
-                        Tween(st, TI_FAST, { Transparency = 0.35, Thickness = 1.4 })
-                    end)
-                    btn.MouseLeave:Connect(function()
-                        Tween(st, TI_FAST, { Transparency = 0.70, Thickness = 1.1 })
-                    end)
-                end
-            end
+        local st = Instance.new("UIStroke")
+        st.Thickness       = 1.6
+        st.Transparency    = 0.25
+        st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        st.LineJoinMode    = Enum.LineJoinMode.Round
+        st.Color           = Color3.fromRGB(140, 92, 246)
+        st.Parent          = wrap
+        AddRGB(st)
 
-            for _, child in ipairs(tabContainer:GetChildren()) do dressTab(child) end
-            tabContainer.ChildAdded:Connect(function(child)
-                task.wait()
-                dressTab(child)
+        if tabFrame:IsA("ImageButton") then
+            tabFrame.MouseEnter:Connect(function()
+                Tween(st, TI_FAST, { Transparency = 0.05, Thickness = 2.0 })
+            end)
+            tabFrame.MouseLeave:Connect(function()
+                Tween(st, TI_FAST, { Transparency = 0.25, Thickness = 1.6 })
             end)
         end
     end
+
+    local function sweep(root)
+        if not root then return end
+        for _, child in ipairs(root:GetDescendants()) do
+            dressTab(child)
+        end
+        root.DescendantAdded:Connect(function(child)
+            task.wait()
+            dressTab(child)
+        end)
+    end
+
+    if Scrolling then sweep(Scrolling) end
 
     -- Animacion de apertura suave.
     local target = aA.Size

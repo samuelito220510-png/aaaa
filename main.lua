@@ -11700,7 +11700,7 @@ Parent=ap.Parent,
 UIElements={},
 Elements={},
 ContainerFrame=nil,
-UICorner=Window.UICorner-(Window.UIPadding/2),
+UICorner=100,
 
 Gap=Window.NewElements and 1 or 6,
 
@@ -15706,49 +15706,43 @@ task.defer(function()
     end
 
     -- Driver RGB global (una sola conexion renderstepped reutilizable).
-    -- Esquema: 3 ciclos del espectro RGB para que SIEMPRE haya multiples
-    -- colores visibles en el stroke al rotar, no solo uno a la vez.
-    local function Band(t, r, g, b) return ColorSequenceKeypoint.new(t, Color3.fromRGB(r, g, b)) end
+    -- Esquema: UN ciclo completo del espectro con rotacion fija (vertical)
+    -- y el OFFSET corriendo. Asi todos los colores viven a la vez en el
+    -- borde y "fluyen" alrededor del tab como en la referencia.
     local NEON_SEQUENCE = ColorSequence.new({
-        Band(0.000, 255, 0,   0),   -- ciclo 1
-        Band(0.055, 255, 165, 0),
-        Band(0.110, 255, 255, 0),
-        Band(0.165, 0,   255, 0),
-        Band(0.220, 0,   255, 255),
-        Band(0.275, 0,   0,   255),
-        Band(0.333, 255, 0,   255),
-        Band(0.388, 255, 0,   0),   -- ciclo 2
-        Band(0.444, 255, 255, 0),
-        Band(0.500, 0,   255, 0),
-        Band(0.555, 0,   255, 255),
-        Band(0.611, 0,   0,   255),
-        Band(0.666, 255, 0,   255),
-        Band(0.722, 255, 0,   0),   -- ciclo 3
-        Band(0.777, 255, 255, 0),
-        Band(0.833, 0,   255, 0),
-        Band(0.888, 0,   255, 255),
-        Band(0.944, 0,   0,   255),
-        Band(1.000, 255, 0,   0),
+        ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0,   0)),   -- rojo
+        ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 128, 0)),   -- naranja
+        ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 0)),   -- amarillo
+        ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0,   255, 60)),  -- verde
+        ColorSequenceKeypoint.new(0.66, Color3.fromRGB(0,   220, 255)), -- cian
+        ColorSequenceKeypoint.new(0.83, Color3.fromRGB(80,  70,  255)), -- azul
+        ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0,   190)), -- magenta
     })
 
     if not _G.__ParceHubRGB then
-        _G.__ParceHubRGB = { list = {}, rot = 0 }
+        _G.__ParceHubRGB = { list = {}, off = 0 }
         RS:BindToRenderStep("ParceHubRGB", Enum.RenderPriority.First.Value, function(dt)
             local reg = _G.__ParceHubRGB
-            reg.rot = (reg.rot + dt * 260) % 360
+            -- El offset va de -1 a 1 y lo reciclamos: hace que el espectro
+            -- "fluya" por el gradient de forma continua.
+            reg.off = reg.off + dt * 0.8
+            if reg.off > 1 then reg.off = reg.off - 2 end
+            local v2 = Vector2.new(reg.off, 0)
             for i = #reg.list, 1, -1 do
                 local g = reg.list[i]
                 if typeof(g) ~= "Instance" or not g.Parent then
                     table.remove(reg.list, i)
                 else
-                    g.Rotation = reg.rot
+                    g.Offset = v2
                 end
             end
         end)
     end
 
-    -- AddRGB: a cada UIStroke le monta un UIGradient hijo con la secuencia
-    -- neon. El driver sólo anima UIGradient.Rotation.
+    -- AddRGB: UIGradient hijo con la secuencia neon. Rotation fija a 90
+    -- (vertical) para que TODOS los colores vivan a la vez en el stroke
+    -- (de arriba a abajo), y el driver anima solo el Offset para que
+    -- el espectro corra por el borde como en la referencia.
     local function AddRGB(stroke)
         if not stroke then return stroke end
         local grad = stroke:FindFirstChildOfClass("UIGradient")
@@ -15756,7 +15750,8 @@ task.defer(function()
             grad = Instance.new("UIGradient")
             grad.Parent = stroke
         end
-        grad.Color = NEON_SEQUENCE
+        grad.Color    = NEON_SEQUENCE
+        grad.Rotation = 90
         table.insert(_G.__ParceHubRGB.list, grad)
         return stroke
     end
@@ -15914,33 +15909,35 @@ task.defer(function()
             local function dressTab(tabFrame)
                 if not isTab(tabFrame) then return end
 
-                -- Wrap mete el stroke 3 px DENTRO del tab para que el
-                -- borde no sea recortado por el ScrollingFrame padre.
+                -- Wrap casi al borde (1 px adentro) para que el stroke no
+                -- lo recorte el ScrollingFrame y el pill se vea completo.
                 local wrap = Instance.new("Frame")
                 wrap.Name                 = "PremiumRGBOutline"
                 wrap.AutomaticSize        = Enum.AutomaticSize.None
-                wrap.Size                 = UDim2.new(1, -6, 1, -6)
-                wrap.Position             = UDim2.fromOffset(3, 3)
+                wrap.Size                 = UDim2.new(1, -2, 1, -2)
+                wrap.Position             = UDim2.fromOffset(1, 1)
                 wrap.AnchorPoint          = Vector2.new(0, 0)
                 wrap.BackgroundTransparency = 1
                 wrap.ZIndex               = 25
                 wrap.Parent               = tabFrame
-                NewCorner(wrap, tabRadius - 3)
+                -- Corner alto -> pill casi circular. UICorner escala hasta
+                -- la mitad del lado menor, asi que 100 fuerza el maximo.
+                NewCorner(wrap, 100)
 
                 local st = Instance.new("UIStroke")
-                st.Thickness       = 2.2
-                st.Transparency    = 0.15
+                st.Thickness       = 3
+                st.Transparency    = 0
                 st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
                 st.LineJoinMode    = Enum.LineJoinMode.Round
-                st.Color           = Color3.fromRGB(140, 92, 246)
+                st.Color           = Color3.fromRGB(255, 255, 255)
                 st.Parent          = wrap
                 AddRGB(st)
 
                 tabFrame.MouseEnter:Connect(function()
-                    Tween(st, TI_FAST, { Transparency = 0, Thickness = 2.8 })
+                    Tween(st, TI_FAST, { Thickness = 3.6 })
                 end)
                 tabFrame.MouseLeave:Connect(function()
-                    Tween(st, TI_FAST, { Transparency = 0.15, Thickness = 2.2 })
+                    Tween(st, TI_FAST, { Thickness = 3 })
                 end)
             end
 

@@ -15815,11 +15815,11 @@ task.defer(function()
         local topY = Topbar and Topbar.Size.Y.Offset or 56
         local sep = Instance.new("Frame")
         sep.Name                 = "PremiumSeparator"
-        sep.Size                 = UDim2.new(1, 0, 0, 2)
+        sep.Size                 = UDim2.new(1, 0, 0, 6)
         sep.Position             = UDim2.new(0, 0, 0, 200)
         sep.AnchorPoint          = Vector2.new(0, 0)
-        sep.BackgroundColor3     = Color3.fromRGB(255, 255, 255)
-        sep.BackgroundTransparency = 0.75
+        sep.BackgroundColor3     = Color3.fromRGB(255, 0, 0)
+        sep.BackgroundTransparency = 0
         sep.BorderSizePixel      = 0
         sep.ZIndex               = 999
         sep.Parent               = MainMain

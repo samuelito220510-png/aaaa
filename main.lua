@@ -15808,9 +15808,9 @@ task.defer(function()
     if Topbar and not Topbar:FindFirstChild("PremiumSeparator") then
         local sep = Instance.new("Frame")
         sep.Name                 = "PremiumSeparator"
-        sep.Size                 = UDim2.new(1, -24, 0, 1)
-        sep.Position             = UDim2.new(0, 12, 1, -1)
-        sep.AnchorPoint          = Vector2.new(0, 1)
+        sep.Size                 = UDim2.new(1, 0, 0, 1)
+        sep.Position             = UDim2.new(0, 0, 1, 6)
+        sep.AnchorPoint          = Vector2.new(0, 0)
         sep.BackgroundColor3     = Color3.fromRGB(255, 255, 255)
         sep.BackgroundTransparency = 0.90
         sep.BorderSizePixel      = 0

@@ -11705,7 +11705,7 @@ UICorner=100,
 Gap=Window.NewElements and 1 or 6,
 
 TabPaddingX=2+(Window.UIPadding/2),
-TabPaddingY=5+(Window.UIPadding/2),
+TabPaddingY=9+(Window.UIPadding/2),
 TitlePaddingY=0,
 }
 

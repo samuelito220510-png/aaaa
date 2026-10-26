@@ -15872,6 +15872,125 @@ task.defer(function()
         end
     end
 
+    -- Pills del topbar (v1.0 / ES-EN / Tema). Siempre destruyen las
+    -- versiones viejas y se recrean para que los cambios se apliquen.
+    if Main and Topbar then
+        for _, nm in ipairs({"PremiumVerPill","PremiumLangPill","PremiumThemeBtn"}) do
+            local old = Main:FindFirstChild(nm)
+            if old then old:Destroy() end
+        end
+
+        -- Pill de version
+        local verPill = Instance.new("Frame")
+        verPill.Name = "PremiumVerPill"
+        verPill.AnchorPoint = Vector2.new(0, 0)
+        verPill.Position = UDim2.new(0, 180, 0, 10)
+        verPill.Size = UDim2.fromOffset(50, 24)
+        verPill.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+        verPill.BackgroundTransparency = 0.1
+        verPill.BorderSizePixel = 0
+        verPill.ZIndex = 9999
+        verPill.Parent = Main
+        NewCorner(verPill, 999)
+        local vs = Instance.new("UIStroke")
+        vs.Thickness = 1
+        vs.Color = Color3.fromRGB(140, 92, 246)
+        vs.Transparency = 0.4
+        vs.Parent = verPill
+        local vlbl = Instance.new("TextLabel")
+        vlbl.Size = UDim2.fromScale(1, 1)
+        vlbl.BackgroundTransparency = 1
+        vlbl.FontFace = MontserratFont(Enum.FontWeight.ExtraBold)
+        vlbl.TextSize = 12
+        vlbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+        vlbl.Text = "v1.0"
+        vlbl.TextXAlignment = Enum.TextXAlignment.Center
+        vlbl.ZIndex = 10000
+        vlbl.Parent = verPill
+
+        -- Toggle ES / EN
+        local langPill = Instance.new("Frame")
+        langPill.Name = "PremiumLangPill"
+        langPill.AnchorPoint = Vector2.new(1, 0)
+        langPill.Position = UDim2.new(1, -170, 0, 10)
+        langPill.Size = UDim2.fromOffset(70, 24)
+        langPill.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+        langPill.BackgroundTransparency = 0.1
+        langPill.BorderSizePixel = 0
+        langPill.ZIndex = 9999
+        langPill.Parent = Main
+        NewCorner(langPill, 999)
+        local ls = Instance.new("UIStroke")
+        ls.Thickness = 1
+        ls.Color = Color3.fromRGB(140, 92, 246)
+        ls.Transparency = 0.4
+        ls.Parent = langPill
+        local currentLang = "ES"
+        local esBtn, enBtn
+        local function paint()
+            esBtn.TextColor3 = currentLang == "ES" and Color3.fromRGB(255,255,255) or Color3.fromRGB(130,130,140)
+            enBtn.TextColor3 = currentLang == "EN" and Color3.fromRGB(255,255,255) or Color3.fromRGB(130,130,140)
+            esBtn.BackgroundTransparency = currentLang == "ES" and 0.5 or 1
+            enBtn.BackgroundTransparency = currentLang == "EN" and 0.5 or 1
+        end
+        local function mkLangBtn(label, scaleX)
+            local b = Instance.new("TextButton")
+            b.Size = UDim2.new(0.5, -2, 1, -4)
+            b.Position = UDim2.new(scaleX, scaleX == 0 and 2 or 0, 0, 2)
+            b.BackgroundColor3 = Color3.fromRGB(140, 92, 246)
+            b.BorderSizePixel = 0
+            b.Text = label
+            b.FontFace = MontserratFont(Enum.FontWeight.ExtraBold)
+            b.TextSize = 12
+            b.AutoButtonColor = false
+            b.ZIndex = 10000
+            b.Parent = langPill
+            local bc = Instance.new("UICorner")
+            bc.CornerRadius = UDim.new(1, 0)
+            bc.Parent = b
+            return b
+        end
+        esBtn = mkLangBtn("ES", 0)
+        enBtn = mkLangBtn("EN", 0.5)
+        paint()
+        esBtn.MouseButton1Click:Connect(function()
+            currentLang = "ES"; paint()
+        end)
+        enBtn.MouseButton1Click:Connect(function()
+            currentLang = "EN"; paint()
+        end)
+
+        -- Boton Tema (cicla temas)
+        local themeBtn = Instance.new("TextButton")
+        themeBtn.Name = "PremiumThemeBtn"
+        themeBtn.AnchorPoint = Vector2.new(1, 0)
+        themeBtn.Position = UDim2.new(1, -95, 0, 10)
+        themeBtn.Size = UDim2.fromOffset(60, 24)
+        themeBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+        themeBtn.BackgroundTransparency = 0.1
+        themeBtn.BorderSizePixel = 0
+        themeBtn.Text = "Tema"
+        themeBtn.FontFace = MontserratFont(Enum.FontWeight.ExtraBold)
+        themeBtn.TextSize = 12
+        themeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        themeBtn.AutoButtonColor = false
+        themeBtn.ZIndex = 9999
+        themeBtn.Parent = Main
+        NewCorner(themeBtn, 999)
+        local tsk = Instance.new("UIStroke")
+        tsk.Thickness = 1
+        tsk.Color = Color3.fromRGB(140, 92, 246)
+        tsk.Transparency = 0.4
+        tsk.Parent = themeBtn
+        local themeList = { "Dark","Light","Violet","Rose","Emerald","Sky","Rainbow" }
+        local themeIdx = 1
+        themeBtn.MouseButton1Click:Connect(function()
+            themeIdx = themeIdx % #themeList + 1
+            pcall(function() h.WindUI:SetTheme(themeList[themeIdx]) end)
+            pcall(function() aa:SetTheme(themeList[themeIdx]) end)
+        end)
+    end
+
     -- Sidebar: fondo grafito y linea vertical sutil.
     -- Siempre destruir las versiones viejas y recrear para que los cambios
     -- de grosor/transparencia se apliquen al recargar el script.

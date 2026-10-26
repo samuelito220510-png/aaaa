@@ -15809,7 +15809,7 @@ task.defer(function()
         local sep = Instance.new("Frame")
         sep.Name                 = "PremiumSeparator"
         sep.Size                 = UDim2.new(1, 0, 0, 1)
-        sep.Position             = UDim2.new(0, 0, 1, 6)
+        sep.Position             = UDim2.new(0, 0, 1, 16)
         sep.AnchorPoint          = Vector2.new(0, 0)
         sep.BackgroundColor3     = Color3.fromRGB(255, 255, 255)
         sep.BackgroundTransparency = 0.90

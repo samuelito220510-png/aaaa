@@ -11705,7 +11705,7 @@ UICorner=100,
 Gap=Window.NewElements and 1 or 6,
 
 TabPaddingX=2+(Window.UIPadding/2),
-TabPaddingY=7+(Window.UIPadding/2),
+TabPaddingY=4+(Window.UIPadding/2),
 TitlePaddingY=0,
 }
 
@@ -13265,7 +13265,7 @@ ao("UIPadding",{
 
 PaddingLeft=UDim.new(0,6),
 PaddingRight=UDim.new(0,6),
-PaddingTop=UDim.new(0,2),
+PaddingTop=UDim.new(0,14),
 PaddingBottom=UDim.new(0,aw.UIPadding/2),
 }),
 

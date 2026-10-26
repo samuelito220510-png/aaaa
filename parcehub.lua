@@ -15805,16 +15805,18 @@ task.defer(function()
     -- Topbar refinada.
     local MainMain = Main:FindFirstChild("Main")
     local Topbar   = MainMain and MainMain:FindFirstChild("Topbar")
-    if MainMain and not MainMain:FindFirstChild("PremiumSeparator") then
-        -- Separador fuera del Topbar frame: hijo DIRECTO de Main.Main
-        -- para que su ZIndex 999 lo mantenga encima del PanelBackground
-        -- del MainBar (que tapaba al separador cuando era hijo del Topbar).
+    if MainMain then
+        -- Siempre destruir el separador existente y recrear para que los
+        -- cambios de posicion/tamano se apliquen al recargar el script.
+        local old = MainMain:FindFirstChild("PremiumSeparator")
+        if old then old:Destroy() end
+
         local Topbar = MainMain:FindFirstChild("Topbar")
         local topY = Topbar and Topbar.Size.Y.Offset or 56
         local sep = Instance.new("Frame")
         sep.Name                 = "PremiumSeparator"
         sep.Size                 = UDim2.new(1, 0, 0, 2)
-        sep.Position             = UDim2.new(0, 0, 0, topY - 8)
+        sep.Position             = UDim2.new(0, 0, 0, topY - 18)
         sep.AnchorPoint          = Vector2.new(0, 0)
         sep.BackgroundColor3     = Color3.fromRGB(255, 255, 255)
         sep.BackgroundTransparency = 0.75

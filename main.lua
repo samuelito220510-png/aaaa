@@ -15887,10 +15887,10 @@ task.defer(function()
 
         local line = Instance.new("Frame")
         line.Name                 = "PremiumSideLine"
-        line.Size                 = UDim2.new(0, 1, 1, -20)
-        line.Position             = UDim2.new(1, -1, 0, 10)
+        line.Size                 = UDim2.new(0, 2, 1, -20)
+        line.Position             = UDim2.new(1, -2, 0, 10)
         line.BackgroundColor3     = Color3.fromRGB(255, 255, 255)
-        line.BackgroundTransparency = 0.92
+        line.BackgroundTransparency = 0.75
         line.BorderSizePixel      = 0
         line.ZIndex               = 2
         line.Parent               = SideCont

@@ -13261,8 +13261,8 @@ Padding=UDim.new(0,aw.Gap),
 }),
 ao("UIPadding",{
 
-PaddingLeft=UDim.new(0,8),
-PaddingRight=UDim.new(0,8),
+PaddingLeft=UDim.new(0,4),
+PaddingRight=UDim.new(0,12),
 PaddingBottom=UDim.new(0,aw.UIPadding/2),
 }),
 

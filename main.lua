@@ -11705,7 +11705,7 @@ UICorner=100,
 Gap=Window.NewElements and 1 or 6,
 
 TabPaddingX=2+(Window.UIPadding/2),
-TabPaddingY=4+(Window.UIPadding/2),
+TabPaddingY=1+(Window.UIPadding/2),
 TitlePaddingY=0,
 }
 
@@ -11783,7 +11783,7 @@ ThemeTag={
 TextColor3="TabTitle",
 },
 TextTransparency=not ar.Locked and 0.4 or 0.7,
-TextSize=16,
+TextSize=13,
 Size=UDim2.new(1,0,0,0),
 FontFace=Font.new(ak.Font,Enum.FontWeight.ExtraBold),
 TextStrokeTransparency=0.35,
@@ -13265,7 +13265,7 @@ ao("UIPadding",{
 
 PaddingLeft=UDim.new(0,6),
 PaddingRight=UDim.new(0,6),
-PaddingTop=UDim.new(0,14),
+PaddingTop=UDim.new(0,28),
 PaddingBottom=UDim.new(0,aw.UIPadding/2),
 }),
 

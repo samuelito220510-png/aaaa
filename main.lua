@@ -15706,22 +15706,36 @@ task.defer(function()
     end
 
     -- Driver RGB global (una sola conexion renderstepped reutilizable).
-    -- Esquema: espectro RGB rainbow continuo que rota.
+    -- Esquema: 3 ciclos del espectro RGB para que SIEMPRE haya multiples
+    -- colores visibles en el stroke al rotar, no solo uno a la vez.
+    local function Band(t, r, g, b) return ColorSequenceKeypoint.new(t, Color3.fromRGB(r, g, b)) end
     local NEON_SEQUENCE = ColorSequence.new({
-        ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0,   0)),   -- rojo
-        ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 165, 0)),   -- naranja
-        ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 0)),   -- amarillo
-        ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0,   255, 0)),   -- verde
-        ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0,   255, 255)), -- cian
-        ColorSequenceKeypoint.new(0.83, Color3.fromRGB(0,   0,   255)), -- azul
-        ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0,   0)),   -- loop al rojo
+        Band(0.000, 255, 0,   0),   -- ciclo 1
+        Band(0.055, 255, 165, 0),
+        Band(0.110, 255, 255, 0),
+        Band(0.165, 0,   255, 0),
+        Band(0.220, 0,   255, 255),
+        Band(0.275, 0,   0,   255),
+        Band(0.333, 255, 0,   255),
+        Band(0.388, 255, 0,   0),   -- ciclo 2
+        Band(0.444, 255, 255, 0),
+        Band(0.500, 0,   255, 0),
+        Band(0.555, 0,   255, 255),
+        Band(0.611, 0,   0,   255),
+        Band(0.666, 255, 0,   255),
+        Band(0.722, 255, 0,   0),   -- ciclo 3
+        Band(0.777, 255, 255, 0),
+        Band(0.833, 0,   255, 0),
+        Band(0.888, 0,   255, 255),
+        Band(0.944, 0,   0,   255),
+        Band(1.000, 255, 0,   0),
     })
 
     if not _G.__ParceHubRGB then
         _G.__ParceHubRGB = { list = {}, rot = 0 }
         RS:BindToRenderStep("ParceHubRGB", Enum.RenderPriority.First.Value, function(dt)
             local reg = _G.__ParceHubRGB
-            reg.rot = (reg.rot + dt * 120) % 360
+            reg.rot = (reg.rot + dt * 260) % 360
             for i = #reg.list, 1, -1 do
                 local g = reg.list[i]
                 if typeof(g) ~= "Instance" or not g.Parent then

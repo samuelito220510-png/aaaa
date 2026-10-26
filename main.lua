@@ -13251,9 +13251,7 @@ Size=UDim2.new(1,0,0,0),
 Name="Frame",
 },{
 ao("UIPadding",{
-
-
-
+PaddingTop=UDim.new(0,32),
 PaddingBottom=UDim.new(0,aw.UIPadding/2),
 }),
 ao("UIListLayout",{
@@ -15867,7 +15865,7 @@ task.defer(function()
         local sideBg = Instance.new("Frame")
         sideBg.Name                 = "PremiumSideBg"
         sideBg.BackgroundColor3     = Color3.fromRGB(12, 12, 18)
-        sideBg.BackgroundTransparency = 0.35
+        sideBg.BackgroundTransparency = 1
         sideBg.BorderSizePixel      = 0
         sideBg.Size                 = UDim2.fromScale(1, 1)
         sideBg.ZIndex               = 1

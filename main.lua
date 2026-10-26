@@ -13112,7 +13112,7 @@ OnDestroyCallback=nil,
 
 IsPC=false,
 
-Gap=5,
+Gap=8,
 
 TopBarButtons={},
 AllElements={},
@@ -13263,8 +13263,9 @@ Padding=UDim.new(0,aw.Gap),
 }),
 ao("UIPadding",{
 
-PaddingLeft=UDim.new(0,2),
-PaddingRight=UDim.new(0,aw.UIPadding/2),
+PaddingLeft=UDim.new(0,6),
+PaddingRight=UDim.new(0,6),
+PaddingTop=UDim.new(0,2),
 PaddingBottom=UDim.new(0,aw.UIPadding/2),
 }),
 

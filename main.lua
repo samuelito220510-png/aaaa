@@ -15720,29 +15720,25 @@ task.defer(function()
     })
 
     if not _G.__ParceHubRGB then
-        _G.__ParceHubRGB = { list = {}, off = 0 }
+        _G.__ParceHubRGB = { list = {}, rot = 0 }
         RS:BindToRenderStep("ParceHubRGB", Enum.RenderPriority.First.Value, function(dt)
             local reg = _G.__ParceHubRGB
-            -- El offset va de -1 a 1 y lo reciclamos: hace que el espectro
-            -- "fluya" por el gradient de forma continua.
-            reg.off = reg.off + dt * 0.8
-            if reg.off > 1 then reg.off = reg.off - 2 end
-            local v2 = Vector2.new(reg.off, 0)
+            -- Rotacion continua: el gradient gira como una rueda alrededor
+            -- del tab, los colores barren el perimetro visualmente.
+            reg.rot = (reg.rot + dt * 80) % 360
             for i = #reg.list, 1, -1 do
                 local g = reg.list[i]
                 if typeof(g) ~= "Instance" or not g.Parent then
                     table.remove(reg.list, i)
                 else
-                    g.Offset = v2
+                    g.Rotation = reg.rot
                 end
             end
         end)
     end
 
-    -- AddRGB: UIGradient hijo con la secuencia neon. Rotation fija a 90
-    -- (vertical) para que TODOS los colores vivan a la vez en el stroke
-    -- (de arriba a abajo), y el driver anima solo el Offset para que
-    -- el espectro corra por el borde como en la referencia.
+    -- AddRGB: UIGradient hijo con la secuencia neon. El driver anima
+    -- Rotation en bucle para que el espectro "gire" alrededor del stroke.
     local function AddRGB(stroke)
         if not stroke then return stroke end
         local grad = stroke:FindFirstChildOfClass("UIGradient")
@@ -15750,8 +15746,7 @@ task.defer(function()
             grad = Instance.new("UIGradient")
             grad.Parent = stroke
         end
-        grad.Color    = NEON_SEQUENCE
-        grad.Rotation = 90
+        grad.Color = NEON_SEQUENCE
         table.insert(_G.__ParceHubRGB.list, grad)
         return stroke
     end
@@ -15909,8 +15904,27 @@ task.defer(function()
             local function dressTab(tabFrame)
                 if not isTab(tabFrame) then return end
 
-                -- Wrap casi al borde (1 px adentro) para que el stroke no
-                -- lo recorte el ScrollingFrame y el pill se vea completo.
+                -- Forzamos el PILL al tab mismo: un UICorner con Scale 1
+                -- recorta la imagen squircle en forma de píldora perfecta.
+                -- Removemos los UICorners anteriores para evitar conflicto.
+                for _, child in ipairs(tabFrame:GetChildren()) do
+                    if child:IsA("UICorner") then child:Destroy() end
+                end
+                local tabCorner = Instance.new("UICorner")
+                tabCorner.CornerRadius = UDim.new(1, 0)
+                tabCorner.Parent       = tabFrame
+                -- También al Outline interno del tab (el 9-slice de la lib)
+                local libOutline = tabFrame:FindFirstChild("Outline")
+                if libOutline then
+                    for _, child in ipairs(libOutline:GetChildren()) do
+                        if child:IsA("UICorner") then child:Destroy() end
+                    end
+                    local oc = Instance.new("UICorner")
+                    oc.CornerRadius = UDim.new(1, 0)
+                    oc.Parent       = libOutline
+                end
+
+                -- Wrap pegado al borde con corner Scale 1 -> stroke pill real.
                 local wrap = Instance.new("Frame")
                 wrap.Name                 = "PremiumRGBOutline"
                 wrap.AutomaticSize        = Enum.AutomaticSize.None
@@ -15920,9 +15934,10 @@ task.defer(function()
                 wrap.BackgroundTransparency = 1
                 wrap.ZIndex               = 25
                 wrap.Parent               = tabFrame
-                -- Corner alto -> pill casi circular. UICorner escala hasta
-                -- la mitad del lado menor, asi que 100 fuerza el maximo.
-                NewCorner(wrap, 100)
+
+                local wrapCorner = Instance.new("UICorner")
+                wrapCorner.CornerRadius = UDim.new(1, 0)
+                wrapCorner.Parent       = wrap
 
                 local st = Instance.new("UIStroke")
                 st.Thickness       = 3

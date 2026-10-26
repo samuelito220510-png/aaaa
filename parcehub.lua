@@ -15892,15 +15892,18 @@ task.defer(function()
         sideBg.Parent               = SideCont
         NewCorner(sideBg, Radius - 4)
 
+        -- La linea vive en Main.Main para poder extenderse mas alla del
+        -- SideBarContainer (que termina donde empieza el user bar o el bottom).
+        local sideW = SideCont.Size.X.Offset
         local line = Instance.new("Frame")
         line.Name                 = "PremiumSideLine"
         line.Size                 = UDim2.new(0, 2, 1, 0)
-        line.Position             = UDim2.new(1, -2, 0, 0)
+        line.Position             = UDim2.new(0, sideW - 2, 0, 0)
         line.BackgroundColor3     = Color3.fromRGB(255, 255, 255)
         line.BackgroundTransparency = 0.75
         line.BorderSizePixel      = 0
-        line.ZIndex               = 2
-        line.Parent               = SideCont
+        line.ZIndex               = 9999
+        line.Parent               = MainMain or Main
     end
 
     -- Outlines RGB en cada tab (sidebar).

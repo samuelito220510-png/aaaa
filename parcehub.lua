@@ -15873,8 +15873,15 @@ task.defer(function()
     end
 
     -- Sidebar: fondo grafito y linea vertical sutil.
+    -- Siempre destruir las versiones viejas y recrear para que los cambios
+    -- de grosor/transparencia se apliquen al recargar el script.
     local SideCont = UI.SideBarContainer
-    if SideCont and not SideCont:FindFirstChild("PremiumSideBg") then
+    if SideCont then
+        local oldBg = SideCont:FindFirstChild("PremiumSideBg")
+        if oldBg then oldBg:Destroy() end
+        local oldLn = SideCont:FindFirstChild("PremiumSideLine")
+        if oldLn then oldLn:Destroy() end
+
         local sideBg = Instance.new("Frame")
         sideBg.Name                 = "PremiumSideBg"
         sideBg.BackgroundColor3     = Color3.fromRGB(12, 12, 18)

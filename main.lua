@@ -15706,14 +15706,15 @@ task.defer(function()
     end
 
     -- Driver RGB global (una sola conexion renderstepped reutilizable).
-    -- Esquema: UIGradient tricolor amarillo-azul-rojo que ROTA.
+    -- Esquema: espectro RGB rainbow continuo que rota.
     local NEON_SEQUENCE = ColorSequence.new({
-        ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 221, 0)),   -- amarillo
-        ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 221, 0)),
-        ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0,   102, 255)), -- azul
-        ColorSequenceKeypoint.new(0.66, Color3.fromRGB(0,   102, 255)),
-        ColorSequenceKeypoint.new(0.83, Color3.fromRGB(230, 15,  15)),  -- rojo
-        ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 221, 0)),   -- loop al amarillo
+        ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0,   0)),   -- rojo
+        ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 165, 0)),   -- naranja
+        ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 0)),   -- amarillo
+        ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0,   255, 0)),   -- verde
+        ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0,   255, 255)), -- cian
+        ColorSequenceKeypoint.new(0.83, Color3.fromRGB(0,   0,   255)), -- azul
+        ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0,   0)),   -- loop al rojo
     })
 
     if not _G.__ParceHubRGB then

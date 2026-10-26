@@ -15892,13 +15892,16 @@ task.defer(function()
         sideBg.Parent               = SideCont
         NewCorner(sideBg, Radius - 4)
 
-        -- La linea vive en Main.Main para poder extenderse mas alla del
-        -- SideBarContainer (que termina donde empieza el user bar o el bottom).
+        -- La linea vive en Main.Main para extenderse por toda la columna,
+        -- pero arranca justo DEBAJO del topbar y respeta el separador
+        -- horizontal (no lo cruza).
         local sideW = SideCont.Size.X.Offset
+        local Topbar3 = MainMain and MainMain:FindFirstChild("Topbar")
+        local topY = Topbar3 and Topbar3.Size.Y.Offset or 56
         local line = Instance.new("Frame")
         line.Name                 = "PremiumSideLine"
-        line.Size                 = UDim2.new(0, 2, 1, 0)
-        line.Position             = UDim2.new(0, sideW - 2, 0, 0)
+        line.Size                 = UDim2.new(0, 2, 1, -(topY + 6))
+        line.Position             = UDim2.new(0, sideW - 2, 0, topY + 6)
         line.BackgroundColor3     = Color3.fromRGB(255, 255, 255)
         line.BackgroundTransparency = 0.75
         line.BorderSizePixel      = 0

@@ -15805,24 +15805,28 @@ task.defer(function()
     -- Topbar refinada.
     local MainMain = Main:FindFirstChild("Main")
     local Topbar   = MainMain and MainMain:FindFirstChild("Topbar")
-    if MainMain then
-        -- Siempre destruir el separador existente y recrear para que los
-        -- cambios de posicion/tamano se apliquen al recargar el script.
-        local old = MainMain:FindFirstChild("PremiumSeparator")
-        if old then old:Destroy() end
+    -- Separador: parented a Main (frame raiz) con ZIndex 9999 para
+    -- asegurar que esta por encima de TODO (MainBar, PanelBackground, etc).
+    do
+        local oldA = Main:FindFirstChild("PremiumSeparator")
+        if oldA then oldA:Destroy() end
+        if MainMain then
+            local oldB = MainMain:FindFirstChild("PremiumSeparator")
+            if oldB then oldB:Destroy() end
+        end
 
-        local Topbar = MainMain:FindFirstChild("Topbar")
-        local topY = Topbar and Topbar.Size.Y.Offset or 56
+        local Topbar2 = MainMain and MainMain:FindFirstChild("Topbar")
+        local topY = Topbar2 and Topbar2.Size.Y.Offset or 56
         local sep = Instance.new("Frame")
         sep.Name                 = "PremiumSeparator"
-        sep.Size                 = UDim2.new(1, 0, 0, 6)
-        sep.Position             = UDim2.new(0, 0, 0, 200)
+        sep.Size                 = UDim2.new(1, 0, 0, 2)
+        sep.Position             = UDim2.new(0, 0, 0, topY + 2)
         sep.AnchorPoint          = Vector2.new(0, 0)
-        sep.BackgroundColor3     = Color3.fromRGB(255, 0, 0)
-        sep.BackgroundTransparency = 0
+        sep.BackgroundColor3     = Color3.fromRGB(255, 255, 255)
+        sep.BackgroundTransparency = 0.75
         sep.BorderSizePixel      = 0
-        sep.ZIndex               = 999
-        sep.Parent               = MainMain
+        sep.ZIndex               = 9999
+        sep.Parent               = Main
     end
 
     if Topbar and not Topbar:FindFirstChild("PremiumStatusDot") then
